@@ -1330,3 +1330,170 @@ html, body { max-width: 100%; overflow-x: hidden; }
   .wa-float { bottom: calc(20px + env(safe-area-inset-bottom)); }
   .navbar { padding-top: env(safe-area-inset-top); }
 }
+
+/* ════════════════════════ LIGHT THEME ════════════════════════ */
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.theme-toggle {
+  background: none;
+  border: none;
+  color: var(--gold);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+.theme-toggle:hover {
+  transform: scale(1.15);
+}
+
+/* Light Theme Variables */
+body.light-theme {
+  --dark:      #F5F2ED; /* warm light gray */
+  --dark-2:    #FAF8F5; /* off-white card backgrounds */
+  --dark-3:    #FFFFFF;
+  --dark-4:    #E5E0D8;
+  --border:    rgba(139,0,0,0.15);
+  color: #1A1A1A;
+}
+
+body.light-theme .navbar {
+  background: rgba(250, 248, 245, 0.95);
+  border-bottom: 1px solid var(--border);
+}
+body.light-theme .navbar.scrolled {
+  background: var(--dark-2);
+}
+body.light-theme .nav-link {
+  color: #1A1A1A;
+}
+body.light-theme .nav-logo .logo-sub {
+  color: rgba(0,0,0,0.6);
+}
+body.light-theme .hamburger span {
+  background: var(--red-mid);
+}
+body.light-theme .theme-toggle {
+  color: var(--red-mid);
+}
+
+/* Listings section in light theme */
+body.light-theme .listings {
+  background: var(--dark);
+}
+body.light-theme .section-title--white {
+  color: var(--text);
+}
+body.light-theme .section-sub--light {
+  color: var(--text-muted);
+}
+body.light-theme .listing-card {
+  background: var(--dark-3);
+  border-color: rgba(0,0,0,0.06);
+}
+body.light-theme .listing-title {
+  color: var(--text);
+}
+body.light-theme .listing-location {
+  color: var(--text-muted);
+}
+body.light-theme .listing-details span {
+  color: var(--text-muted);
+}
+
+/* Contact section in light theme */
+body.light-theme .contact {
+  background: var(--dark-2);
+}
+body.light-theme .contact-info-col {
+  background: var(--dark-3);
+  border-right: 1px solid var(--border);
+}
+body.light-theme .contact-method-value {
+  color: var(--text);
+}
+body.light-theme .contact-method-label {
+  color: var(--red-mid);
+}
+body.light-theme .form-title {
+  color: var(--text);
+}
+body.light-theme .form-group label {
+  color: var(--text-muted);
+}
+body.light-theme .form-group input,
+body.light-theme .form-group select,
+body.light-theme .form-group textarea {
+  background: var(--dark-2);
+  border-color: rgba(0,0,0,0.1);
+  color: var(--text);
+}
+body.light-theme .form-group input:focus,
+body.light-theme .form-group select:focus,
+body.light-theme .form-group textarea:focus {
+  border-color: var(--red-mid);
+}
+body.light-theme .form-note {
+  color: var(--text-muted);
+}
+
+/* Footer section in light theme */
+body.light-theme .footer {
+  background: var(--dark-2);
+  border-top: 1px solid var(--border);
+}
+body.light-theme .footer-tagline {
+  color: var(--text-muted);
+}
+body.light-theme .footer-links a {
+  color: var(--text-muted);
+}
+body.light-theme .footer-bottom p {
+  color: var(--text-muted);
+}
+
+/* Hero overlay lighter for readability */
+body.light-theme .hero-overlay {
+  background: linear-gradient(
+    135deg,
+    rgba(250,248,245,0.85) 0%,
+    rgba(255,255,255,0.75) 50%,
+    rgba(255,255,255,0.6) 100%
+  );
+}
+body.light-theme .hero-title {
+  color: var(--text);
+}
+body.light-theme .hero-tagline {
+  color: var(--text-muted);
+}
+body.light-theme .btn-outline {
+  color: var(--red-mid);
+  border-color: var(--red-mid);
+}
+body.light-theme .btn-outline:hover {
+  background: var(--red-mid);
+  color: var(--white);
+  border-color: var(--red-mid);
+}
+
+/* CTA Banner light theme */
+body.light-theme .cta-banner {
+  background: linear-gradient(135deg, var(--red-mid) 0%, var(--dark) 100%);
+}
+body.light-theme .cta-banner::before {
+  color: rgba(255,255,255,0.06);
+}
+
+/* Map popup light theme text overrides */
+body.light-theme .leaflet-popup-content-wrapper {
+  color: #1A1A1A !important;
+}
+
+

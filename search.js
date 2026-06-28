@@ -98,12 +98,25 @@ document.addEventListener('DOMContentLoaded', () => {
   // Position Zoom control at bottom right
   L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-  // Add clean dark-themed map layer
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  // Define dark & light map tile layers
+  const darkTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
     subdomains: 'abcd',
     maxZoom: 20
-  }).addTo(map);
+  });
+
+  const lightTiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+    subdomains: 'abcd',
+    maxZoom: 20
+  });
+
+  // Select active tile layer depending on load theme
+  let activeTiles = darkTiles;
+  if (document.body.classList.contains('light-theme')) {
+    activeTiles = lightTiles;
+  }
+  activeTiles.addTo(map);
 
   const markerGroup = L.layerGroup().addTo(map);
   const activeMarkers = {}; // stores references to pins by property ID
@@ -261,6 +274,30 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         toggleBtn.innerHTML = '<span class="toggle-icon">🗺️</span> Show Map';
       }
+    });
+  }
+
+  /* ── 7. LIGHT/DARK THEME TOGGLE ── */
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+      themeToggle.textContent = '🌙';
+      map.removeLayer(activeTiles);
+      activeTiles = lightTiles;
+      activeTiles.addTo(map);
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const isLight = document.body.classList.toggle('light-theme');
+      themeToggle.textContent = isLight ? '🌙' : '☀️';
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+
+      // Swap tile layers
+      map.removeLayer(activeTiles);
+      activeTiles = isLight ? lightTiles : darkTiles;
+      activeTiles.addTo(map);
     });
   }
 

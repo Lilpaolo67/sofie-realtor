@@ -344,6 +344,22 @@ document.addEventListener('DOMContentLoaded', () => {
     waBtn.addEventListener('mouseleave', () => tip.style.opacity = '0');
   }
 
+  /* ── 11. LIGHT/DARK THEME TOGGLE ── */
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+      themeToggle.textContent = '🌙';
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const isLight = document.body.classList.toggle('light-theme');
+      themeToggle.textContent = isLight ? '🌙' : '☀️';
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    });
+  }
+
   console.log('%c🏠 Sofie Realtor', 'color:#C8A84B;font-size:18px;font-family:Georgia,serif;font-weight:bold');
   console.log('%cPremium Real Estate · Cebu, Philippines', 'color:#888;font-size:11px');
 });
