@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Property Map Search | Sofie Realtor Cebu</title>
+  <meta name="description" content="Search premium properties in Cebu on our interactive map. Filter by budget, bedrooms, and location." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Poppins:wght@200;300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Leaflet Map CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="search.css" />
+</head>
+<body class="search-page">
+
+  <!-- ═══════════════════ NAVBAR ═══════════════════ -->
+  <nav id="navbar" class="navbar scrolled">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <span class="logo-main">Sofie</span>
+        <span class="logo-sub">Realtor</span>
+      </a>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html" class="nav-link">Home</a></li>
+        <li><a href="index.html#about" class="nav-link">About</a></li>
+        <li><a href="index.html#specialties" class="nav-link">Specialties</a></li>
+        <li><a href="index.html#testimonials" class="nav-link">Testimonials</a></li>
+        <li><a href="index.html#contact" class="nav-link nav-cta">Book a Viewing</a></li>
+      </ul>
+      <button class="hamburger" id="hamburger" aria-label="Open menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════ SEARCH CONTAINER ═══════════════════ -->
+  <main class="search-container">
+    
+    <!-- LEFT SIDEBAR: FILTERS + LISTINGS -->
+    <section class="sidebar-panel">
+      
+      <!-- Filter Controls -->
+      <div class="filter-wrapper">
+        <h1 class="search-title-text">Cebu <em>Map Search</em></h1>
+        <form class="search-filters" id="filterForm">
+          <div class="filter-group">
+            <label for="propertyType">Type</label>
+            <select id="propertyType">
+              <option value="all">All Properties</option>
+              <option value="house">House & Lot</option>
+              <option value="condo">Condominium</option>
+              <option value="commercial">Commercial</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="priceRange">Max Price (₱)</label>
+            <select id="priceRange">
+              <option value="all">Any Price</option>
+              <option value="5000000">Under ₱5M</option>
+              <option value="10000000">Under ₱10M</option>
+              <option value="15000000">Under ₱15M</option>
+              <option value="25000000">Under ₱25M</option>
+            </select>
+          </div>
+        </form>
+        <div class="results-count"><span id="countNum">0</span> properties found in Cebu</div>
+      </div>
+
+      <!-- Scrollable Cards Container -->
+      <div class="listings-scroll-list" id="listingsList">
+        <!-- Rendered via JS -->
+      </div>
+    </section>
+
+    <!-- RIGHT FULLSCREEN MAP -->
+    <section class="map-panel">
+      <div id="map"></div>
+    </section>
+
+    <!-- MOBILE TOGGLE VIEW BUTTON -->
+    <button class="view-toggle-btn" id="viewToggleBtn">
+      <span class="toggle-icon">🗺️</span> Show Map
+    </button>
+  </main>
+
+  <!-- Leaflet Map JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <!-- Search Logic JS -->
+  <script src="search.js"></script>
+</body>
+</html>
