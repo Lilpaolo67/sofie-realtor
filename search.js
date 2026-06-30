@@ -126,6 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    const redPinSvg = `<svg viewBox="0 0 24 24" fill="#A31515" style="width:14px; height:14px; display:inline-block; vertical-align:middle; margin-right:4px; position:relative; top:-1px;"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>`;
+
     properties.forEach(prop => {
       const card = document.createElement('article');
       card.className = 'listing-card';
@@ -137,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="listing-info" style="padding:16px">
           <h3 class="listing-title" style="font-size:1.15rem">${prop.title}</h3>
-          <p class="listing-location" style="margin-bottom:8px">📍 ${prop.location}</p>
+          <p class="listing-location" style="margin-bottom:8px">${redPinSvg} ${prop.location}</p>
           <div class="listing-details" style="margin-bottom:12px; padding-bottom:12px">
             <span>🛏 ${prop.beds} Beds</span>
             <span>🛁 ${prop.baths}</span>
@@ -283,4 +285,16 @@ document.addEventListener('DOMContentLoaded', () => {
   // Run initial render
   renderListings(cebuProperties);
   renderMarkers(cebuProperties);
+
+  // Auto-focus property from URL query ?id=X
+  const urlParams = new URLSearchParams(window.location.search);
+  const propId = parseInt(urlParams.get('id'), 10);
+  if (propId) {
+    setTimeout(() => {
+      const card = document.getElementById(`card-${propId}`);
+      if (card) {
+        card.click();
+      }
+    }, 400); // Wait for Leaflet maps to initialize
+  }
 });

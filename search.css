@@ -153,9 +153,9 @@ body.search-page {
 
 /* Custom Marker Pins */
 .price-marker-pin {
-  background: var(--gold);
-  border: 1px solid #0D0D0D;
-  color: #0D0D0D;
+  background: var(--red-mid);
+  border: 1px solid var(--gold);
+  color: var(--white);
   font-weight: 600;
   font-family: var(--font-sans);
   font-size: 0.72rem;
@@ -169,11 +169,11 @@ body.search-page {
 
 .price-marker-pin:hover,
 .price-marker-pin.active {
-  background: var(--red-mid);
-  color: var(--white);
+  background: var(--gold);
+  color: #0D0D0D;
   transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(163,21,21,0.5);
-  border-color: var(--gold);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+  border-color: #0D0D0D;
 }
 
 /* Popup contents */
