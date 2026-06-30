@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
       size: 350,
       lat: 10.3122,
       lng: 123.8889,
-      image: 'images/property_house.png'
+      image: 'images/property_house.jpg'
     },
     {
       id: 2,
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
       size: 88,
       lat: 10.3278,
       lng: 123.9061,
-      image: 'images/property_condo.png'
+      image: 'images/property_condo.jpg'
     },
     {
       id: 3,
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
       size: 220,
       lat: 10.3444,
       lng: 123.9214,
-      image: 'images/property_commercial.png'
+      image: 'images/property_commercial.jpg'
     },
     {
       id: 4,
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
       size: 150,
       lat: 10.3115,
       lng: 124.0194,
-      image: 'images/property_condo.png'
+      image: 'images/property_condo.jpg'
     },
     {
       id: 5,
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
       size: 180,
       lat: 10.3320,
       lng: 123.8988,
-      image: 'images/property_house.png'
+      image: 'images/property_house.jpg'
     }
   ];
 
@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }).addTo(map);
 
   const markerGroup = L.layerGroup().addTo(map);
-  const activeMarkers = {}; // stores references to pins by property ID
+  let activeMarkers = {}; // stores references to pins by property ID
 
   /* ── 3. RENDER CARD LISTINGS ── */
   const listingsList = document.getElementById('listingsList');
