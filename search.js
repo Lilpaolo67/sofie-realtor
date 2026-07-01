@@ -91,7 +91,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   ];
 
-  let cebuProperties = [];
+  // Cebu neighborhood coordinates dictionary for auto-geocoding
+  const locationCoordinates = {
+    'banawa': [10.3122, 123.8889],
+    'lahug': [10.3278, 123.9061],
+    'it park': [10.3278, 123.9061],
+    'mandaue': [10.3444, 123.9214],
+    'mactan': [10.3115, 124.0194],
+    'lapu-lapu': [10.3115, 124.0194],
+    'talamban': [10.3708, 123.9172],
+    'guadalupe': [10.3150, 123.8850],
+    'busay': [10.3667, 123.8833],
+    'liloan': [10.4000, 124.0000],
+    'consolacion': [10.3833, 123.9667],
+    'talisay': [10.2500, 123.8333]
+  };
 
   // Robust CSV Parser
   function parseCSV(text) {
@@ -160,10 +174,55 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       });
 
-      if (item.id && item.title && item.lat && item.lng) {
+      // Simple validation: only id and title are strictly required
+      if (item.id && item.title) {
+        // 1. Auto-format priceLabel if missing or empty
+        if (!item.priceLabel && item.price) {
+          const priceNum = parseFloat(item.price);
+          if (priceNum >= 1000000) {
+            item.priceLabel = `₱${(priceNum / 1000000).toFixed(1).replace('.0', '')}M`;
+          } else {
+            item.priceLabel = `₱${(priceNum / 1000).toFixed(0)}K`;
+          }
+        } else if (!item.priceLabel) {
+          item.priceLabel = 'Contact';
+        }
+
+        // 2. Resolve GPS coordinates if lat/lng are missing or empty
+        let lat = parseFloat(item.lat);
+        let lng = parseFloat(item.lng);
+        
+        if (isNaN(lat) || isNaN(lng) || !lat || !lng) {
+          const locLower = item.location ? item.location.toLowerCase() : '';
+          let found = false;
+          
+          for (const [key, coords] of Object.entries(locationCoordinates)) {
+            if (locLower.includes(key)) {
+              lat = coords[0];
+              lng = coords[1];
+              found = true;
+              break;
+            }
+          }
+          
+          if (!found) {
+            lat = 10.3157; // Cebu City center fallback
+            lng = 123.8854;
+          }
+          
+          // Add random jitter to prevent stacked pins overlapping
+          lat += (Math.random() - 0.5) * 0.008;
+          lng += (Math.random() - 0.5) * 0.008;
+          
+          item.lat = lat;
+          item.lng = lng;
+        }
+
+        // 3. Fallback standard image if empty
         if (!item.image) {
-          item.image = item.type === 'condo' ? 'images/property_condo.jpg' : 
-                       item.type === 'commercial' ? 'images/property_commercial.jpg' : 
+          const typeLower = item.type ? item.type.toLowerCase().trim() : '';
+          item.image = typeLower.includes('condo') ? 'images/property_condo.jpg' : 
+                       typeLower.includes('commercial') ? 'images/property_commercial.jpg' : 
                        'images/property_house.jpg';
         }
         data.push(item);
