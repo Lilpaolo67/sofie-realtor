@@ -260,7 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
       };
 
       // Failsafe post to Google Apps Script Web App (using 'no-cors' mode for Google redirect handling)
-      fetch('https://script.google.com/macros/s/AKfycbxM8jODqfFluCew_k_x6EDid7QjuaxJU_pjvdfgRDyp2cc3_GAh4vU0IyCIeDH7aCbz/exec', {
+      fetch('https://script.google.com/macros/s/AKfycbw8tSbGSXvSMYYaJ8Mw4eD252vdsI8p1htgK23Yy1m273XzP4R9fBsUnpz9iebn_uNg/exec', {
         method: 'POST',
         mode: 'no-cors',
         headers: {
