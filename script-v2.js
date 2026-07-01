@@ -224,66 +224,52 @@ document.addEventListener('DOMContentLoaded', () => {
     goTo(0);
   }
 
-  /* ── 6. CONTACT FORM (Web3Forms Live Email Delivery) ── */
+  /* ── 6. CONTACT FORM (Web3Forms Native Submit & Redirect) ── */
   const form = document.getElementById('contactForm');
   if (form) {
     form.addEventListener('submit', e => {
-      e.preventDefault();
-
       const name = document.getElementById('fullName').value.trim();
       const email = document.getElementById('email').value.trim();
 
       if (!name || !email) {
+        e.preventDefault();
         shakeField(!name ? 'fullName' : 'email');
         return;
       }
 
       const btn = form.querySelector('#form-submit');
       btn.textContent = 'Sending…';
-      btn.disabled = true;
-
-      // Convert FormData to JSON object as required by Web3Forms AJAX
-      const formData = new FormData(form);
-      const object = Object.fromEntries(formData);
-      object.access_key = '6d162ceb-a166-4cb3-a2c5-f335eda93c1f';
-      const json = JSON.stringify(object);
-
-      fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: json
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          form.style.display = 'none';
-
-          const success = document.createElement('div');
-          success.className = 'form-success show';
-          success.innerHTML = `
-            <div class="success-icon">🎉</div>
-            <p class="success-title">Inquiry Sent!</p>
-            <p class="success-text">
-              Thank you, <strong style="color:var(--gold)">${escapeHtml(name)}</strong>!<br />
-              Your message was sent directly to Sofie. She will contact you shortly.
-            </p>
-          `;
-          form.parentElement.appendChild(success);
-        } else {
-          btn.textContent = 'Send Inquiry';
-          btn.disabled = false;
-          alert('Something went wrong: ' + (data.message || 'Please try again.'));
-        }
-      })
-      .catch(error => {
-        btn.textContent = 'Send Inquiry';
-        btn.disabled = false;
-        alert('Submission error: ' + error.message);
-      });
+      // Disable button after event loop ticks to allow native form submission
+      setTimeout(() => { btn.disabled = true; }, 10);
     });
+  }
+
+  // Check if redirect success is in URL parameters on load
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('success') === 'true') {
+    if (form) {
+      form.style.display = 'none';
+
+      const success = document.createElement('div');
+      success.className = 'form-success show';
+      success.innerHTML = `
+        <div class="success-icon">🎉</div>
+        <p class="success-title">Inquiry Sent!</p>
+        <p class="success-text">
+          Thank you for reaching out!<br />
+          Your message was sent directly to Sofie. She will contact you shortly.
+        </p>
+      `;
+      form.parentElement.appendChild(success);
+
+      // Smooth scroll to the contact form section so they see the success message
+      setTimeout(() => {
+        const contactSection = document.getElementById('contact');
+        if (contactSection) {
+          contactSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
   }
 
   function shakeField(id) {
