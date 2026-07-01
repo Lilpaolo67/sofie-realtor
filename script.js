@@ -242,13 +242,19 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.textContent = 'Sending…';
       btn.disabled = true;
 
+      // Convert FormData to JSON object as required by Web3Forms AJAX
       const formData = new FormData(form);
-      // Replace with your Web3Forms access key
-      formData.append('access_key', '6d162ceb-a166-4cb3-a2c5-f335eda93c1f');
+      const object = Object.fromEntries(formData);
+      object.access_key = '6d162ceb-a166-4cb3-a2c5-f335eda93c1f';
+      const json = JSON.stringify(object);
 
       fetch('https://api.web3forms.com/submit', {
         method: 'POST',
-        body: formData
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: json
       })
       .then(response => response.json())
       .then(data => {
