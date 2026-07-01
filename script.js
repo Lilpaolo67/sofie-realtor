@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
     goTo(0);
   }
 
-  /* ── 6. CONTACT FORM ── */
+  /* ── 6. CONTACT FORM (Web3Forms Live Email Delivery) ── */
   const form = document.getElementById('contactForm');
   if (form) {
     form.addEventListener('submit', e => {
@@ -238,26 +238,45 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Simulate send
       const btn = form.querySelector('#form-submit');
       btn.textContent = 'Sending…';
       btn.disabled = true;
 
-      setTimeout(() => {
-        form.style.display = 'none';
+      const formData = new FormData(form);
+      // Replace with your Web3Forms access key
+      formData.append('access_key', 'YOUR_ACCESS_KEY_HERE');
 
-        const success = document.createElement('div');
-        success.className = 'form-success show';
-        success.innerHTML = `
-          <div class="success-icon">🎉</div>
-          <p class="success-title">Inquiry Sent!</p>
-          <p class="success-text">
-            Thank you, <strong style="color:var(--gold)">${escapeHtml(name)}</strong>!<br />
-            Sofie will get back to you within 24 hours.
-          </p>
-        `;
-        form.parentElement.appendChild(success);
-      }, 1400);
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          form.style.display = 'none';
+
+          const success = document.createElement('div');
+          success.className = 'form-success show';
+          success.innerHTML = `
+            <div class="success-icon">🎉</div>
+            <p class="success-title">Inquiry Sent!</p>
+            <p class="success-text">
+              Thank you, <strong style="color:var(--gold)">${escapeHtml(name)}</strong>!<br />
+              Your message was sent directly to Sofie. She will contact you shortly.
+            </p>
+          `;
+          form.parentElement.appendChild(success);
+        } else {
+          btn.textContent = 'Send Inquiry';
+          btn.disabled = false;
+          alert('Something went wrong. Please try again or WhatsApp Sofie directly.');
+        }
+      })
+      .catch(error => {
+        btn.textContent = 'Send Inquiry';
+        btn.disabled = false;
+        alert('Network error. Please check your internet connection.');
+      });
     });
   }
 
