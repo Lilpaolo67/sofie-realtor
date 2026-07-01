@@ -224,23 +224,58 @@ document.addEventListener('DOMContentLoaded', () => {
     goTo(0);
   }
 
-  /* ── 6. CONTACT FORM (Web3Forms Native Submit & Redirect) ── */
+  /* ── 6. CONTACT FORM (Web3Forms Submit + Google Sheets Apps Script integration) ── */
   const form = document.getElementById('contactForm');
   if (form) {
     form.addEventListener('submit', e => {
+      // Prevent standard form submission to log data to Google Sheets first
+      e.preventDefault();
+
       const name = document.getElementById('fullName').value.trim();
       const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone') ? document.getElementById('phone').value.trim() : '';
+      const propTypeSelect = document.getElementById('propertyType');
+      const propType = propTypeSelect && propTypeSelect.selectedIndex > 0 ? propTypeSelect.options[propTypeSelect.selectedIndex].text : '';
+      const budgetSelect = document.getElementById('budget');
+      const budget = budgetSelect && budgetSelect.selectedIndex > 0 ? budgetSelect.options[budgetSelect.selectedIndex].text : '';
+      const message = document.getElementById('message') ? document.getElementById('message').value.trim() : '';
 
       if (!name || !email) {
-        e.preventDefault();
         shakeField(!name ? 'fullName' : 'email');
         return;
       }
 
       const btn = form.querySelector('#form-submit');
       btn.textContent = 'Sending…';
-      // Disable button after event loop ticks to allow native form submission
-      setTimeout(() => { btn.disabled = true; }, 10);
+      btn.disabled = true;
+
+      // JSON payload mapped to Google Sheets column structure
+      const leadData = {
+        fullName: name,
+        email: email,
+        phone: phone,
+        propertyType: propType,
+        budget: budget,
+        message: message
+      };
+
+      // Failsafe post to Google Apps Script Web App (using 'no-cors' mode for Google redirect handling)
+      fetch('https://script.google.com/macros/s/AKfycbz3w4Z9Ga_6TXNWJ2YCFNmcpgddbneHCksyimsAUgjL1PxNlkhZY3M-5Jc3gvCVs9I_/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(leadData)
+      })
+      .then(() => {
+        console.log('Lead successfully saved to Google Sheets.');
+        form.submit(); // Natively submit the HTML form to Web3Forms API
+      })
+      .catch(err => {
+        console.error('Error saving lead to Google Sheets:', err);
+        form.submit(); // Failsafe: native submit anyway to ensure client gets the email alert
+      });
     });
   }
 
