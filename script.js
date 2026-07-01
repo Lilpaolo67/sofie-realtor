@@ -275,13 +275,13 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
           btn.textContent = 'Send Inquiry';
           btn.disabled = false;
-          alert('Something went wrong. Please try again or WhatsApp Sofie directly.');
+          alert('Something went wrong: ' + (data.message || 'Please try again.'));
         }
       })
       .catch(error => {
         btn.textContent = 'Send Inquiry';
         btn.disabled = false;
-        alert('Network error. Please check your internet connection.');
+        alert('Submission error: ' + error.message);
       });
     });
   }
