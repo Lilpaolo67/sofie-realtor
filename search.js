@@ -455,8 +455,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Fetch from Google Sheet
-  fetch(spreadsheetUrl)
+  // Fetch from Google Sheet (appended with a timestamp to bypass browser cache)
+  fetch(spreadsheetUrl + '&t=' + Date.now())
     .then(response => response.text())
     .then(csvText => {
       const parsed = parseCSV(csvText);
