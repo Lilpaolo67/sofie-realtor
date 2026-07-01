@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Property Map Search | Sofie Realtor Cebu</title>
-  <meta name="description" content="Search premium properties in Cebu on our interactive map. Filter by budget, bedrooms, and location." />
+  <meta name="description" content="Search premium properties in Cebu on our interactive map. Filter by budget, type, and location." />
+  <meta property="og:title" content="Property Map Search | Sofie Realtor Cebu" />
+  <meta property="og:description" content="Use our interactive split-screen map to search premium listings in Metro Cebu. Filter by location, price, and property type." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://lilpaolo67.github.io/sofie-realtor/search.html" />
+  <meta property="og:image" content="https://lilpaolo67.github.io/sofie-realtor/images/property_condo.jpg" />
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -52,7 +57,11 @@
       <!-- Filter Controls -->
       <div class="filter-wrapper">
         <h1 class="search-title-text">Cebu <em>Map Search</em></h1>
-        <form class="search-filters" id="filterForm">
+        <form class="search-filters" id="filterForm" onsubmit="return false;">
+          <div class="filter-group filter-group--search">
+            <label for="searchKeyword">Location or Keyword</label>
+            <input type="text" id="searchKeyword" placeholder="e.g. IT Park, Banawa, Condo..." autocomplete="off" />
+          </div>
           <div class="filter-group">
             <label for="propertyType">Type</label>
             <select id="propertyType">

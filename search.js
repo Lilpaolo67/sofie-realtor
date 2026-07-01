@@ -14,8 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  /* ── 1. PROPERTY MOCK DATA WITH GPS COORDINATES (CEBU) ── */
-  const cebuProperties = [
+  /* ── 1. GOOGLE SHEET DATABASE CONFIGURATION ── */
+  const spreadsheetUrl = 'https://docs.google.com/spreadsheets/d/1U6lntxYnBabrKq-xWEpc800TVUg0fWHc-YkDywWqMtY/export?format=csv';
+
+  // Fallback properties in case Google Sheet is empty or fails to load
+  const fallbackProperties = [
     {
       id: 1,
       type: 'house',
@@ -87,6 +90,87 @@ document.addEventListener('DOMContentLoaded', () => {
       image: 'images/property_house.jpg'
     }
   ];
+
+  let cebuProperties = [];
+
+  // Robust CSV Parser
+  function parseCSV(text) {
+    if (!text || text.trim() === '') return [];
+    
+    const lines = [];
+    let row = [""];
+    let inQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      const next = text[i+1];
+
+      if (c === '"') {
+        if (inQuotes && next === '"') {
+          row[row.length - 1] += '"';
+          i++; // skip next quote
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (c === ',') {
+        if (inQuotes) {
+          row[row.length - 1] += ',';
+        } else {
+          row.push('');
+        }
+      } else if (c === '\n' || c === '\r') {
+        if (c === '\r' && next === '\n') {
+          i++; // skip \n
+        }
+        if (inQuotes) {
+          row[row.length - 1] += '\n';
+        } else {
+          lines.push(row);
+          row = [''];
+        }
+      } else {
+        row[row.length - 1] += c;
+      }
+    }
+    if (row.length > 1 || row[0] !== '') {
+      lines.push(row);
+    }
+
+    if (lines.length < 2) return [];
+
+    const headers = lines[0].map(h => h.trim().toLowerCase());
+    const data = [];
+
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i];
+      if (values.length < headers.length) continue;
+      
+      const item = {};
+      headers.forEach((header, index) => {
+        let val = values[index] ? values[index].trim() : '';
+        if (['id', 'lat', 'lng', 'beds', 'baths', 'area'].includes(header)) {
+          const num = parseFloat(val);
+          item[header] = isNaN(num) ? val : num;
+        } else if (header === 'price') {
+          const cleanPrice = parseFloat(val.replace(/[^\d.]/g, ''));
+          item[header] = isNaN(cleanPrice) ? 0 : cleanPrice;
+          item.priceLabel = val;
+        } else {
+          item[header] = val;
+        }
+      });
+
+      if (item.id && item.title && item.lat && item.lng) {
+        if (!item.image) {
+          item.image = item.type === 'condo' ? 'images/property_condo.jpg' : 
+                       item.type === 'commercial' ? 'images/property_commercial.jpg' : 
+                       'images/property_house.jpg';
+        }
+        data.push(item);
+      }
+    }
+    return data;
+  }
 
   /* ── 2. INITIALIZE MAP (Centered in Metro Cebu) ── */
   const map = L.map('map', {
@@ -226,26 +310,56 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ── 5. FILTER LOGIC ── */
+  const keywordFilter = document.getElementById('searchKeyword');
   const typeFilter = document.getElementById('propertyType');
   const priceFilter = document.getElementById('priceRange');
 
   function runFilters() {
+    const searchVal = keywordFilter ? keywordFilter.value.toLowerCase().trim() : '';
     const selectedType = typeFilter.value;
     const selectedPrice = priceFilter.value;
 
     const filtered = cebuProperties.filter(prop => {
-      // Type Match
-      const matchesType = (selectedType === 'all' || prop.type === selectedType);
+      // Keyword Match (checks title, location, description, type)
+      let matchesKeyword = true;
+      if (searchVal !== '') {
+        const title = prop.title ? prop.title.toLowerCase() : '';
+        const loc = prop.location ? prop.location.toLowerCase() : '';
+        const desc = prop.description ? prop.description.toLowerCase() : '';
+        const type = prop.type ? prop.type.toLowerCase() : '';
+        
+        matchesKeyword = title.includes(searchVal) || 
+                         loc.includes(searchVal) || 
+                         desc.includes(searchVal) || 
+                         type.includes(searchVal);
+      }
+
+      // Type Match (handles variations like Condominium -> condo)
+      let propType = prop.type ? prop.type.toLowerCase().trim() : '';
+      let matchesType = false;
+      if (selectedType === 'all') {
+        matchesType = true;
+      } else if (selectedType === 'house' && (propType.includes('house') || propType.includes('villa') || propType.includes('townhouse'))) {
+        matchesType = true;
+      } else if (selectedType === 'condo' && (propType.includes('condo') || propType.includes('suite'))) {
+        matchesType = true;
+      } else if (selectedType === 'commercial' && (propType.includes('commercial') || propType.includes('office') || propType.includes('retail'))) {
+        matchesType = true;
+      }
+
       // Price Match
       const matchesPrice = (selectedPrice === 'all' || prop.price <= parseInt(selectedPrice, 10));
 
-      return matchesType && matchesPrice;
+      return matchesKeyword && matchesType && matchesPrice;
     });
 
     renderListings(filtered);
     renderMarkers(filtered);
   }
 
+  if (keywordFilter) {
+    keywordFilter.addEventListener('input', runFilters);
+  }
   typeFilter.addEventListener('change', runFilters);
   priceFilter.addEventListener('change', runFilters);
 
@@ -282,19 +396,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Run initial render
-  renderListings(cebuProperties);
-  renderMarkers(cebuProperties);
-
-  // Auto-focus property from URL query ?id=X
-  const urlParams = new URLSearchParams(window.location.search);
-  const propId = parseInt(urlParams.get('id'), 10);
-  if (propId) {
-    setTimeout(() => {
-      const card = document.getElementById(`card-${propId}`);
-      if (card) {
-        card.click();
+  // Fetch from Google Sheet
+  fetch(spreadsheetUrl)
+    .then(response => response.text())
+    .then(csvText => {
+      const parsed = parseCSV(csvText);
+      if (parsed && parsed.length > 0) {
+        cebuProperties = parsed;
+        console.log('Listings loaded from Google Sheet:', cebuProperties.length);
+      } else {
+        console.warn('Google Sheet empty or invalid headers. Using fallback data.');
+        cebuProperties = fallbackProperties;
       }
-    }, 400); // Wait for Leaflet maps to initialize
+      initApp();
+    })
+    .catch(error => {
+      console.error('Error fetching Google Sheet:', error);
+      cebuProperties = fallbackProperties;
+      initApp();
+    });
+
+  function initApp() {
+    renderListings(cebuProperties);
+    renderMarkers(cebuProperties);
+
+    // Auto-focus property from URL query ?id=X
+    const urlParams = new URLSearchParams(window.location.search);
+    const propId = parseInt(urlParams.get('id'), 10);
+    if (propId) {
+      setTimeout(() => {
+        const card = document.getElementById(`card-${propId}`);
+        if (card) {
+          card.click();
+        }
+      }, 450); // Wait for Leaflet maps to initialize
+    }
   }
 });

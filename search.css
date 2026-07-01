@@ -63,7 +63,8 @@ body.search-page {
   font-weight: 500;
 }
 
-.filter-group select {
+.filter-group select,
+.filter-group input {
   background: var(--dark-4);
   border: 1px solid rgba(200,168,75,0.3);
   color: var(--white);
@@ -71,12 +72,20 @@ body.search-page {
   border-radius: var(--radius);
   font-size: 0.8rem;
   outline: none;
-  cursor: pointer;
   transition: var(--transition);
 }
 
-.filter-group select:focus {
+.filter-group select {
+  cursor: pointer;
+}
+
+.filter-group select:focus,
+.filter-group input:focus {
   border-color: var(--gold);
+}
+
+.filter-group--search {
+  grid-column: span 2;
 }
 
 .results-count {
